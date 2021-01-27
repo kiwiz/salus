@@ -1,17 +1,19 @@
 require_relative '../../spec_helper.rb'
 
 RSpec::Matchers.define :match_report_json do |expected|
-  def remove_key(json_string, key = 'running_time')
+  def remove_keys(json_string)
     json = JSON.parse(json_string)
+    key = 'running_time'
     json.delete(key)
     json['scans'].each do |scanner, _|
       json['scans'][scanner].delete(key)
+      json['scans'][scanner]['info'].delete('stderr')
     end
     json
   end
 
   match do |actual|
-    remove_key(actual) == remove_key(expected)
+    remove_keys(actual) == remove_keys(expected)
   end
 end
 
